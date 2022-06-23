@@ -1,4 +1,5 @@
 import imp
+from itertools import accumulate
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -71,8 +72,8 @@ def app():
             model = LogisticRegression(solver='lbfgs', max_iter=1000)
             model.fit(self.X_train, self.y_train)
             self.y_pred = model.predict(self.X_test)
-            self.acc_logreg = model.score(self.X_test, self.y_test)
-            return self.acc_logreg
+            self.acc_logreg = metrics.accuracy_score(self.y_test, self.y_pred)
+            
 
         def knn(self):
             model = KNeighborsClassifier(n_neighbors=5)
@@ -150,13 +151,14 @@ def app():
 
 
         def plot_all_accuracy(self):
-            fig = px.bar(x=['KNN', 'Random Forest', 'Ada Boost', 'Decision Tree'], y=[self.acc_knn_improved * 100, self.acc_rf * 100, self.acc_ada *100, self.acc_dt *100], text_auto=True)
+            fig = px.bar(x=['Logistic Regression', 'KNN', 'Random Forest', 'Ada Boost', 'Decision Tree'], y=[self.acc_logreg * 100, self.acc_knn_improved * 100, self.acc_rf * 100, self.acc_ada *100, self.acc_dt *100], text_auto=True)
             fig.update_layout(title='Accuracy of Models', xaxis_title='Model', yaxis_title='Accuracy')
             st.plotly_chart(fig)
 
 
     
     ml = MachineLearningModels(X_train, X_test, y_train, y_test)
+    ml.logistic_regression()
     ml.plot_knn_accuracy()
     ml.plot_knn_confusion_matrix()
     ml.random_forest() 
